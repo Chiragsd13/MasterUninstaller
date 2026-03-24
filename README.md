@@ -4,29 +4,45 @@ A high-fidelity Windows desktop application that gives you full control over uni
 
 ![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-blue)
 ![Python](https://img.shields.io/badge/python-3.10%2B-green)
-![License](https://img.shields.io/badge/license-MIT-yellow)
+
 
 ## Features
 
 - **Full System Access** — Uninstall programs from all 3 registry hives (HKLM 64-bit, HKLM 32-bit, HKCU), including hidden system components
-- **Force Uninstall** — 5-strategy cascade: quiet uninstall string, MSI `/quiet`, silent flags (`/S`, `/silent`, `/quiet`, `/VERYSILENT`), registry cleanup, install folder deletion
-- **Windows Services** — Stop and disable any Windows service
-- **Store Apps (AppX)** — Remove Microsoft Store / UWP apps
+- **Force Uninstall (10-strategy cascade)** — Inspired by [microsoft-edge-uninstaller](https://github.com/Chiragsd13/microsoft-edge-uninstaller):
+  1. Kill related processes
+  2. QuietUninstallString
+  3. MSI `/quiet` uninstall
+  4. WMI Win32_Product uninstall
+  5. Find & run setup.exe with `--force-uninstall` (Edge-style)
+  6. Common silent flags (`/S`, `/silent`, `/VERYSILENT`, etc.)
+  7. Registry entry removal
+  8. Folder deletion with ownership takeover (`takeown` + `icacls`)
+  9. Shortcut cleanup (Start Menu, Desktop)
+  10. Scheduled task cleanup
+- **Windows Services** — Start, stop, enable, disable any Windows service with filters (Running/Stopped/Disabled)
+- **Store Apps (AppX)** — Remove Microsoft Store / UWP apps; force-remove for all users including provisioned packages
+- **Scheduled Tasks** — View, disable, enable, and delete scheduled tasks
 - **Startup Items** — Disable or delete programs that run at startup
 - **Optional Features** — Remove Windows optional features (Hyper-V, WSL, etc.)
-- **Action Logging** — Every action is logged to JSON with full details for audit and restore
+- **Action Logging** — Every action is logged to JSON with full details, one-click restore, export, and clear
 - **Confirmation Dialogs** — Nothing is deleted without explicit user confirmation
 - **Auto-Refresh** — Lists update automatically after every action
+- **Keyboard Shortcuts** — Ctrl+R (refresh all), Ctrl+F (search), Ctrl+1-7 (switch tabs), Esc (close dialogs)
 
 ## UI
 
-- AMOLED black theme with glass-morphism effects
-- Material Design 3 styling with design tokens
-- Frameless window with custom titlebar
-- Smooth spring animations and hover zoom with glass effect
-- Per-item context menus ("...") for quick actions
-- Filter chips: All / Has Uninstaller / No Uninstaller / System
-- Inline app icon avatars
+- AMOLED black theme with glass-morphism effects and noise texture overlay
+- Material Design 3 styling with design tokens and semantic colors
+- Frameless window with custom titlebar, maximize/restore, and drag region
+- Smooth spring/bounce animations, staggered card entry, hover zoom with glass
+- Progress bar for async operations
+- Per-item context menus ("...") with slide animation
+- Filter chips per tab (Programs, Services, Store Apps)
+- Inline colored letter avatars with gradient overlays
+- Toast notifications with dismiss button
+- Tooltips on window controls
+- System info in status bar (OS version, RAM usage)
 
 ## Installation
 
@@ -71,8 +87,5 @@ MasterUninstaller/
 - **Backend:** Python with `pywebview` (WebView2) serving an embedded HTML/CSS/JS frontend
 - **System Queries:** PowerShell executed silently (no visible windows) to read registry, services, AppX packages, startup entries, and optional features
 - **Uninstaller Launch:** Uninstallers run in a visible console window so users can interact with installer GUIs
-- **Force Uninstall:** Attempts multiple strategies in sequence until one succeeds, then cleans up leftover registry entries and install folders
+- **Force Uninstall:** 10-strategy cascade inspired by the [Edge uninstaller](https://github.com/Chiragsd13/microsoft-edge-uninstaller) — kills processes, tries multiple uninstall methods, takes ownership of locked files, and cleans up shortcuts + scheduled tasks
 
-## License
-
-MIT
